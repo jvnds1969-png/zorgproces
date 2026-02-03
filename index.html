@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zorgproces - Document naar Zorgplan</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="logo">Z</div>
+        <div class="header-text">
+            <h1>Zorgproces</h1>
+            <p>Van document naar persoonlijk zorgplan</p>
+        </div>
+        <nav>
+            <a href="https://jvnds1969-png.github.io/Zorgbundels-en-probleemgebieden/" target="_blank">Lexicon</a>
+            <a href="https://jvnds1969-png.github.io/Zorgverleners/" target="_blank">Zorgverleners</a>
+            <a href="https://test.onepatient.bingli.be/dashboard" target="_blank">OnePatient</a>
+        </nav>
+    </header>
+
+    <main>
+        <!-- STAP 1: Document Upload -->
+        <section class="workflow-step" id="step1">
+            <div class="step-header">
+                <span class="step-number">1</span>
+                <h2>Document Uploaden</h2>
+            </div>
+            <div class="step-content">
+                <div class="upload-zone" id="uploadZone">
+                    <div class="upload-icon">+</div>
+                    <p>Sleep een PDF hierheen of klik om te uploaden</p>
+                    <p class="upload-hint">Bingli-rapport, medicatieschema, ontslagbrief...</p>
+                    <input type="file" id="fileInput" accept=".pdf,.txt,.json" hidden>
+                </div>
+                <div id="uploadedFile" class="uploaded-file hidden"></div>
+            </div>
+        </section>
+
+        <!-- STAP 2: Gegevens Extractie -->
+        <section class="workflow-step" id="step2">
+            <div class="step-header">
+                <span class="step-number">2</span>
+                <h2>Gegevens Extractie</h2>
+            </div>
+            <div class="step-content">
+                <div class="extraction-panel">
+                    <div class="extraction-source">
+                        <h3>Bron: Bingli/OnePatient</h3>
+                        <div id="extractedData" class="data-display">Wacht op document...</div>
+                    </div>
+                    <div class="extraction-matches">
+                        <h3>Gevonden in Lexicon</h3>
+                        <div id="lexiconMatches" class="matches-list"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- STAP 3: Probleemgebieden -->
+        <section class="workflow-step" id="step3">
+            <div class="step-header">
+                <span class="step-number">3</span>
+                <h2>Probleemgebieden Selecteren</h2>
+            </div>
+            <div class="step-content">
+                <div id="problemAreas" class="problem-grid"></div>
+            </div>
+        </section>
+
+        <!-- STAP 4: Zorgbundels -->
+        <section class="workflow-step" id="step4">
+            <div class="step-header">
+                <span class="step-number">4</span>
+                <h2>Voorgestelde Zorgbundels</h2>
+            </div>
+            <div class="step-content">
+                <div id="careBundles" class="bundles-list"></div>
+            </div>
+        </section>
+
+        <!-- STAP 5: Zorgplan -->
+        <section class="workflow-step" id="step5">
+            <div class="step-header">
+                <span class="step-number">5</span>
+                <h2>Zorgplan</h2>
+            </div>
+            <div class="step-content">
+                <div class="careplan-tabs">
+                    <button class="tab-btn active" data-tab="professional">Professioneel</button>
+                    <button class="tab-btn" data-tab="patient">Voor Patient (eenvoudig)</button>
+                </div>
+                <div id="carePlanProfessional" class="careplan-content active"></div>
+                <div id="carePlanPatient" class="careplan-content"></div>
+            </div>
+        </section>
+
+        <!-- STAP 6: Zorgverleners -->
+        <section class="workflow-step" id="step6">
+            <div class="step-header">
+                <span class="step-number">6</span>
+                <h2>Aanbevolen Zorgverleners</h2>
+            </div>
+            <div class="step-content">
+                <div id="suggestedProviders" class="providers-grid"></div>
+                <a href="https://jvnds1969-png.github.io/Zorgverleners/" target="_blank" class="btn-marketplace">Zoek meer in Marketplace</a>
+            </div>
+        </section>
+    </main>
+
+    <script src="zorgbundels.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
