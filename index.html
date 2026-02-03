@@ -32,10 +32,12 @@
                     <div class="upload-icon">+</div>
                     <p>Sleep een PDF hierheen of klik om te uploaden</p>
                     <p class="upload-hint">Bingli-rapport, medicatieschema, ontslagbrief...</p>
-                    <input type="file" id="fileInput" accept=".pdf,.txt,.json" hidden>
-                </div>
-                <div id="uploadedFile" class="uploaded-file hidden"></div>
-            </div>
+            <input type="file" id="fileInput" accept=".pdf,.txt,.json" multiple hidden>                </div>
+            <!-- Lijst van geüploade documenten -->
+            <div id="uploadedFiles" class="uploaded-files hidden"></div>
+            
+            <!-- Start Analyse knop -->
+            <button id="startAnalyse" class="start-analyse-btn hidden">🔍 Start Analyse</button>            </div>
         </section>
 
         <!-- STAP 2: Gegevens Extractie -->
@@ -223,8 +225,7 @@
     let extractedTerms = [];
     let matchedBundles = [];
     let selectedBundles = [];
-    let planMode = 'professional';
-
+    let uploadedDocuments = [];
     // ========================
     // DOM ELEMENTS
     // ========================
@@ -234,8 +235,8 @@
     const extractedData = document.getElementById('extractedData');
     const lexiconMatches = document.getElementById('lexiconMatches');
     const problemAreas = document.getElementById('problemAreas');
-    const suggestedBundles = document.getElementById('suggestedBundles');
-    const carePlan = document.getElementById('carePlan');
+    const uploadedFiles = document.getElementById('uploadedFiles');
+    const startAnalyse = document.getElementById('startAnalyse');    const carePlan = document.getElementById('carePlan');
     const recommendedProviders = document.getElementById('recommendedProviders');
     const btnProfessional = document.getElementById('btnProfessional');
     const btnPatient = document.getElementById('btnPatient');
