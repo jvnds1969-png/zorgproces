@@ -236,7 +236,7 @@
         uploadedFile.innerHTML = '<span>Document: ' + file.name + '</span> <button onclick="removeFile()">Verwijderen</button>';
         uploadedFile.classList.remove('hidden');
         uploadZone.classList.add('hidden');
-        simulateExtraction(file);
+        readFileContent(file);
     }
 
     window.removeFile = function() {
@@ -260,31 +260,48 @@
     }
 
     // ========================
-    // EXTRACTION SIMULATION
+    // FILE READING AND ANALYSIS
     // ========================
-    function simulateExtraction(file) {
-        extractedData.innerHTML = '<div class="loading">Analyseren...</div>';
+    
+    function readFileContent(file) {
+        extractedData.innerHTML = '<div class="loading">Bestand inlezen...</div>';
         
-        setTimeout(() => {
-            // Simuleer geextraheerde data
-            const sampleData = {
-                patient: "Jan de Vries, 78 jaar",
-                diagnoses: ["diabetes mellitus type 2", "hypertensie", "polyfarmacie"],
-                medicatie: ["metformine 500mg", "lisinopril 10mg", "simvastatine 40mg", "omeprazol 20mg", "paracetamol"],
-                klachten: ["suiker schommelt", "hoge bloeddruk", "veel pillen", "duizelig bij opstaan"]
-            };
-            
-            extractedTerms = [...sampleData.diagnoses, ...sampleData.klachten];
-            
-            extractedData.innerHTML = `
-                <div class="extracted-item"><strong>Patient:</strong> ${sampleData.patient}</div>
-                <div class="extracted-item"><strong>Diagnoses:</strong> ${sampleData.diagnoses.join(', ')}</div>
-                <div class="extracted-item"><strong>Medicatie:</strong> ${sampleData.medicatie.join(', ')}</div>
-                <div class="extracted-item"><strong>Klachten:</strong> ${sampleData.klachten.join(', ')}</div>
-            `;
-            
-            matchWithLexicon();
-        }, 1500);
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const content = e.target.result;
+            analyzeContent(content, file.name);
+        };
+        reader.readAsText(file);
+    }
+    
+    function analyzeContent(content, filename) {
+        const text = content.toLowerCase();
+        const foundTerms = new Set();
+        
+        // Zoek alle medische en patient termen
+        zorgbundels.forEach(bundle => {
+            [...bundle.medischLexicon, ...bundle.patientLexicon].forEach(term => {
+                if (text.includes(term.toLowerCase())) {
+                    foundTerms.add(term);
+                }
+            });
+        });
+        
+        extractedTerms = [...foundTerms];
+        
+        // Toon gevonden termen
+        if (extractedTerms.length > 0) {
+            extractedData.innerHTML = 
+                '<div class="extracted-item"><strong>Bestand:</strong> ' + filename + '</div>' +
+                '<div class="extracted-item"><strong>Gevonden termen:</strong> ' + extractedTerms.join(', ') + '</div>' +
+                '<div class="extracted-item"><strong>Totaal:</strong> ' + extractedTerms.length + ' medische termen gedetecteerd</div>';
+        } else {
+            extractedData.innerHTML = 
+                '<div class="extracted-item"><strong>Bestand:</strong> ' + filename + '</div>' +
+                '<div class="extracted-item" style="color:#ef4444">Geen medische termen gevonden in dit document. Upload een document met medische informatie.</div>';
+        }
+        
+        matchWithLexicon();
     }
 
     // ========================
