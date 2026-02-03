@@ -228,6 +228,7 @@
     let uploadedDocuments = [];
     // ========================
     // DOM ELEMENTS
+          document.addEventListener('DOMContentLoaded', () => {
     // ========================
     const uploadZone = document.getElementById('uploadZone');
     const fileInput = document.getElementById('fileInput');
@@ -635,5 +636,6 @@ const saveToHospital = document.getElementById('saveToHospital');
         }
     });
     </script>
+      }); // End DOMContentLoaded
 </body>
 </html>
