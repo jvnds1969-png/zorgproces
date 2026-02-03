@@ -94,6 +94,34 @@
                 <div id="carePlan" class="care-plan"></div>
                 <button id="exportPlan" class="export-btn hidden">Exporteer Zorgplan (PDF)</button>
             </div>
+
+                    <!-- Patiënt Info voor Ziekenhuis -->
+        <div id="patientInfo" class="patient-info hidden">
+            <h3>Patiëntgegevens</h3>
+            <div class="patient-form">
+                <div class="form-row">
+                    <label>Naam:</label>
+                    <input type="text" id="patientName" placeholder="Achternaam, Voornaam">
+                </div>
+                <div class="form-row">
+                    <label>Afdeling:</label>
+                    <input type="text" id="patientAfdeling" placeholder="Bijv. Reva 1">
+                </div>
+                <div class="form-row">
+                    <label>Geboortedatum:</label>
+                    <input type="date" id="patientBirthdate">
+                </div>
+                <div class="form-row">
+                    <label>Ontslagdatum:</label>
+                    <input type="date" id="patientDischargeDate">
+                </div>
+                <div class="form-row">
+                    <label>Specialist:</label>
+                    <input type="text" id="patientSpecialist" placeholder="Dr. ...">
+                </div>
+            </div>
+            <button id="saveToHospital" class="save-btn">💾 Opslaan naar Mijn Patiënten</button>
+        </div>
         </section>
 
         <!-- STAP 6: Aanbevolen Zorgverleners -->
@@ -216,6 +244,8 @@
     // ========================
     // FILE UPLOAD
     // ========================
+        const patientInfo = document.getElementById('patientInfo');
+const saveToHospital = document.getElementById('saveToHospital');
     uploadZone.addEventListener('click', () => fileInput.click());
     uploadZone.addEventListener('dragover', (e) => {
         e.preventDefault();
@@ -458,6 +488,7 @@
 
     function simplifyName(name) {
         const map = {
+                patientInfo.classList.remove('hidden');
             'Diabetes met verhoogd thuisrisico': 'Uw suikerziekte',
             'Polyfarmacie en medicatieveiligheid': 'Uw medicijnen',
             'Cardiovasculair hoog risico': 'Uw hart en bloedvaten',
@@ -497,6 +528,55 @@
     // ========================
     exportPlan.addEventListener('click', () => {
         alert('Zorgplan export functionaliteit - In een volledige implementatie zou dit een PDF genereren.');
+    });
+
+            // ========================
+    // OPSLAAN NAAR ZIEKENHUIS
+    // ========================
+    
+    saveToHospital.addEventListener('click', () => {
+        // Haal patiëntgegevens op
+        const patientName = document.getElementById('patientName').value;
+        const patientAfdeling = document.getElementById('patientAfdeling').value;
+        const patientBirthdate = document.getElementById('patientBirthdate').value;
+        const patientDischargeDate = document.getElementById('patientDischargeDate').value;
+        const patientSpecialist = document.getElementById('patientSpecialist').value;
+        
+        // Valideer
+        if (!patientName || !patientAfdeling || !patientBirthdate || !patientDischargeDate || !patientSpecialist) {
+            alert('⚠️ Vul alle velden in om de patiënt op te slaan.');
+            return;
+        }
+        
+        // Haal bestaande patiënten op uit localStorage
+        let patients = JSON.parse(localStorage.getItem('hospitalPatients') || '[]');
+        
+        // Maak nieuw patiënt object
+        const newPatient = {
+            nr: patients.length + 1,
+            naam: patientName,
+            afdeling: patientAfdeling,
+            geboortedatum: patientBirthdate,
+            ontslagdatum: patientDischargeDate,
+            specialist: patientSpecialist,
+            zorgplan: carePlan.innerHTML,
+            selectedBundles: selectedBundles.map(b => b.naam),
+            timestamp: new Date().toISOString()
+        };
+        
+        // Voeg toe aan lijst
+        patients.push(newPatient);
+        
+        // Sla op in localStorage
+        localStorage.setItem('hospitalPatients', JSON.stringify(patients));
+        
+        // Toon bevestiging
+        alert('✅ Patiënt ' + patientName + ' is opgeslagen in Mijn Patiënten!');
+        
+        // Optioneel: terug naar ziekenhuis
+        if (confirm('Wilt u terug naar de Ziekenhuis pagina?')) {
+            window.location.href = 'https://jvnds1969-png.github.io/Ziekenhuis/';
+        }
     });
     </script>
 </body>
