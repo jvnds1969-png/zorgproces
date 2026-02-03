@@ -258,17 +258,72 @@ const saveToHospital = document.getElementById('saveToHospital');
         uploadZone.classList.remove('dragover');
         if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
     });
+    // FILE INPUT - Meerdere bestanden toevoegen
     fileInput.addEventListener('change', (e) => {
-        if (e.target.files.length) handleFile(e.target.files[0]);
+        if (e.target.files.length) {
+            Array.from(e.target.files).forEach(file => {
+                uploadedDocuments.push(file);
+            });
+            renderUploadedFiles();
+            e.target.value = ''; // Reset input voor meer uploads
+        }
     });
-
-    function handleFile(file) {
-        currentDocument = file;
-        uploadedFile.innerHTML = '<span>Document: ' + file.name + '</span> <button onclick="removeFile()">Verwijderen</button>';
-        uploadedFile.classList.remove('hidden');
+    
+    // Render lijst van geüploade documenten
+    function renderUploadedFiles() {
+        if (uploadedDocuments.length === 0) {
+            uploadedFiles.classList.add('hidden');
+            startAnalyse.classList.add('hidden');
+            uploadZone.classList.remove('hidden');
+            return;
+        }
+        
         uploadZone.classList.add('hidden');
-        readFileContent(file);
+        uploadedFiles.classList.remove('hidden');
+        startAnalyse.classList.remove('hidden');
+        
+        uploadedFiles.innerHTML = uploadedDocuments.map((file, index) => `
+            <div class="file-item">
+                <span class="file-icon">📄</span>
+                <span class="file-name">${file.name}</span>
+                <button onclick="removeDocument(${index})" class="remove-btn">❌</button>
+            </div>
+        `).join('');
     }
+    
+    // Verwijder document uit lijst
+    window.removeDocument = function(index) {
+        uploadedDocuments.splice(index, 1);
+        renderUploadedFiles();
+        if (uploadedDocuments.length === 0) {
+            resetAll();
+        }
+    };
+    
+    // Start Analyse knop
+    startAnalyse.addEventListener('click', () => {
+        if (uploadedDocuments.length === 0) return;
+        
+        extractedData.innerHTML = '<div class="loading">Analyseren van ' + uploadedDocuments.length + ' document(en)...</div>';
+        
+        // Lees alle documenten en combineer de content
+        let allContent = '';
+        let filesRead = 0;
+        
+        uploadedDocuments.forEach(file => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                allContent += '\n--- ' + file.name + ' ---\n' + e.target.result + '\n';
+                filesRead++;
+                
+                if (filesRead === uploadedDocuments.length) {
+                    // Alle documenten gelezen, start analyse
+                    analyzeContent(allContent, uploadedDocuments.map(f => f.name).join(', '));
+                }
+            };
+            reader.readAsText(file);
+        });
+    });    }
 
     window.removeFile = function() {
         currentDocument = null;
