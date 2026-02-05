@@ -567,3 +567,258 @@ main {
     color: #94a3b8;
     font-style: italic;
 }
+
+
+/* ======================== */
+/* NIEUWE ZORGPLAN STYLES */
+/* ======================== */
+
+/* Patient Form */
+.patient-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: #f8fafc;
+    border-radius: 8px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group label {
+    font-weight: 600;
+    color: #374151;
+}
+
+.form-group input {
+    padding: 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 1rem;
+}
+
+/* Document List */
+.document-list {
+    margin: 1rem 0;
+}
+
+.document-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    margin-bottom: 0.5rem;
+}
+
+.doc-icon { font-size: 1.5rem; }
+.doc-name { flex: 1; }
+.remove-btn {
+    background: none;
+    border: none;
+    color: #ef4444;
+    cursor: pointer;
+    font-size: 1.2rem;
+}
+
+/* Terms Grid */
+.terms-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.term-tag {
+    background: #dbeafe;
+    color: #1e40af;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+}
+
+.no-terms {
+    color: #6b7280;
+    font-style: italic;
+}
+
+/* Bundle List */
+.bundle-item {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.bundle-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.bundle-header input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+}
+
+.priority-indicator {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 1rem;
+}
+
+.bundle-details {
+    margin-top: 0.75rem;
+    padding-left: 2rem;
+    font-size: 0.9rem;
+    color: #6b7280;
+}
+
+.matched-terms {
+    color: #059669;
+    margin-bottom: 0.25rem;
+}
+
+.bundle-priority {
+    font-weight: 600;
+}
+
+/* Mode Toggle */
+.mode-toggle {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.toggle-btn {
+    padding: 0.75rem 1.5rem;
+    border: 2px solid #005b96;
+    background: white;
+    color: #005b96;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.toggle-btn.active {
+    background: #005b96;
+    color: white;
+}
+
+/* Zorgplan Output */
+.plan-output {
+    margin: 1.5rem 0;
+}
+
+.zorgplan {
+    max-width: 100%;
+}
+
+.plan-header {
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+}
+
+.plan-header h2 {
+    margin: 0 0 1rem 0;
+    color: #1e40af;
+}
+
+.plan-header.patient {
+    background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+}
+
+.plan-header.patient h2 {
+    color: #065f46;
+}
+
+.bundel-section {
+    background: white;
+    padding: 1.5rem;
+    margin: 1rem 0;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.bundel-section h3 {
+    margin: 0 0 1rem 0;
+    font-size: 1.25rem;
+}
+
+.bundel-content .section {
+    margin: 0.75rem 0;
+    padding: 0.75rem;
+    background: #f8fafc;
+    border-radius: 6px;
+}
+
+.bundel-content .section h4 {
+    margin: 0 0 0.5rem 0;
+    font-size: 0.9rem;
+    color: #475569;
+}
+
+.bundel-content .section p,
+.bundel-content .section ul {
+    margin: 0;
+}
+
+.bundel-content .section ul {
+    padding-left: 1.25rem;
+}
+
+/* Patient Version Styles */
+.patient-version .bundel-section {
+    font-size: 1.1rem;
+    line-height: 1.7;
+}
+
+.priority-label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    margin: 0.5rem 0;
+    text-transform: uppercase;
+}
+
+/* Plan Actions */
+.plan-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.btn-secondary {
+    padding: 0.75rem 1.5rem;
+    background: white;
+    border: 2px solid #005b96;
+    color: #005b96;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.btn-secondary:hover {
+    background: #f0f9ff;
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    padding: 2rem;
+    color: #6b7280;
+    font-size: 0.9rem;
+}
