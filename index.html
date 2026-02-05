@@ -1,644 +1,107 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zorgplanproces - Van Document naar Zorgplan</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zorgplanproces - Van Document naar Zorgplan</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header>
-        <div class="logo">Z</div>
-        <div class="header-text">
-            <h1>Zorgstart</h1>
-            <p>Van document naar persoonlijk zorgplan</p>
+  <header>
+    <div class="logo">Z</div>
+    <div class="header-text">
+      <h1>Zorgstart</h1>
+      <p>Van document naar persoonlijk zorgplan</p>
+    </div>
+    <nav>
+      <a href="https://jvnds1969-png.github.io/Zorgbundels-en-probleemgebieden/" target="_blank">Zorgbundels</a>
+      <a href="https://jvnds1969-png.github.io/Zorgverleners/" target="_blank">Zorgverleners</a>
+      <a href="https://test.onepatient.bingli.be/dashboard" target="_blank">OnePatient</a>
+    </nav>
+  </header>
+
+  <main>
+    <!-- STAP 1: Document Upload & Patient Info -->
+    <section class="workflow-step active" id="stap1">
+      <div class="step-header">
+        <span class="step-number">1</span>
+        <h2>Document Uploaden & Patientgegevens</h2>
+      </div>
+      <div class="step-content">
+        <div class="patient-form">
+          <div class="form-group">
+            <label for="patientNaam">Naam patient:</label>
+            <input type="text" id="patientNaam" placeholder="Voornaam Achternaam">
+          </div>
+          <div class="form-group">
+            <label for="patientGeboortedatum">Geboortedatum:</label>
+            <input type="date" id="patientGeboortedatum">
+          </div>
         </div>
-        <nav>
-            <a href="https://jvnds1969-png.github.io/Zorgbundels-en-probleemgebieden/" target="_blank">Zorgbundels en aandachtsgebieden</a>
-            <a href="https://jvnds1969-png.github.io/Zorgverleners/" target="_blank">Zorgverleners</a>
-            <a href="https://test.onepatient.bingli.be/dashboard" target="_blank">OnePatient</a>
-        </nav>
-    </header>
-
-    <main>
-        <!-- STAP 1: Document Upload -->
-        <section class="workflow-step" id="step1">
-            <div class="step-header">
-                <span class="step-number">1</span>
-                <h2>Document Uploaden</h2>
-            </div>
-            <div class="step-content">
-                <div class="upload-zone" id="uploadZone">
-                    <div class="upload-icon">+</div>
-                    <p>Sleep een PDF hierheen of klik om te uploaden</p>
-                    <p class="upload-hint">Bingli-rapport, medicatieschema, ontslagbrief...</p>
-            <input type="file" id="fileInput" accept=".pdf,.txt,.json" multiple hidden>                </div>
-            <!-- Lijst van geüploade documenten -->
-            <div id="uploadedFiles" class="uploaded-files hidden"></div>
-            
-            <!-- Start Analyse knop -->
-            <button id="startAnalyse" class="start-analyse-btn hidden">🔍 Start Analyse</button>            </div>
-        </section>
-
-        <!-- STAP 2: Gegevens Extractie -->
-        <section class="workflow-step" id="step2">
-            <div class="step-header">
-                <span class="step-number">2</span>
-                <h2>Gegevens Extractie</h2>
-            </div>
-            <div class="step-content">
-                <div class="extraction-panel">
-                    <div class="extraction-source">
-                        <h3>Bron: Bingli/OnePatient</h3>
-                        <div id="extractedData" class="data-display">Wacht op document...</div>
-                    </div>
-                    <div class="extraction-lexicon">
-                        <h3>Gevonden in Lexicon</h3>
-                        <div id="lexiconMatches" class="lexicon-matches"></div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- STAP 3: Probleemgebieden Selecteren -->
-        <section class="workflow-step" id="step3">
-            <div class="step-header">
-                <span class="step-number">3</span>
-                <h2>Probleemgebieden Selecteren</h2>
-            </div>
-            <div class="step-content">
-                <div id="problemAreas" class="problem-areas"></div>
-            </div>
-        </section>
-
-        <!-- STAP 4: Voorgestelde Zorgbundels -->
-        <section class="workflow-step" id="step4">
-            <div class="step-header">
-                <span class="step-number">4</span>
-                <h2>Voorgestelde Zorgbundels</h2>
-            </div>
-            <div class="step-content">
-                <div id="suggestedBundles" class="suggested-bundles"></div>
-            </div>
-        </section>
-
-        <!-- STAP 5: Zorgplan -->
-        <section class="workflow-step" id="step5">
-            <div class="step-header">
-                <span class="step-number">5</span>
-                <h2>Zorgplan</h2>
-            </div>
-            <div class="step-content">
-                <div class="plan-toggle">
-                    <button id="btnProfessional" class="toggle-btn active">Professioneel</button>
-                    <button id="btnPatient" class="toggle-btn">Voor Patient (eenvoudig)</button>
-                </div>
-                <div id="carePlan" class="care-plan"></div>
-                <button id="exportPlan" class="export-btn hidden">Exporteer Zorgplan (PDF)</button>
-            </div>
-
-                    <!-- Patiënt Info voor Ziekenhuis -->
-        <div id="patientInfo" class="patient-info hidden">
-            <h3>Patiëntgegevens</h3>
-            <div class="patient-form">
-                <div class="form-row">
-                    <label>Naam:</label>
-                    <input type="text" id="patientName" placeholder="Achternaam, Voornaam">
-                </div>
-                <div class="form-row">
-                    <label>Afdeling:</label>
-                    <input type="text" id="patientAfdeling" placeholder="Bijv. Reva 1">
-                </div>
-                <div class="form-row">
-                    <label>Geboortedatum:</label>
-                    <input type="date" id="patientBirthdate">
-                </div>
-                <div class="form-row">
-                    <label>Ontslagdatum:</label>
-                    <input type="date" id="patientDischargeDate">
-                </div>
-                <div class="form-row">
-                    <label>Specialist:</label>
-                    <input type="text" id="patientSpecialist" placeholder="Dr. ...">
-                </div>
-            </div>
-            <button id="saveToHospital" class="save-btn">💾 Opslaan naar Mijn Patiënten</button>
+        <div class="upload-zone" id="uploadZone">
+          <div class="upload-icon">+</div>
+          <p>Sleep PDF/TXT hierheen of klik om te uploaden</p>
+          <p class="upload-hint">Bingli-rapport, medicatieschema, ontslagbrief...</p>
+          <input type="file" id="fileInput" accept=".pdf,.txt,.json" multiple hidden>
         </div>
-        </section>
+        <div id="documentList" class="document-list"></div>
+        <button id="extractTerms" class="btn-primary" disabled>Analyseer Documenten</button>
+      </div>
+    </section>
 
-        <!-- STAP 6: Aanbevolen Zorgverleners -->
-        <section class="workflow-step" id="step6">
-            <div class="step-header">
-                <span class="step-number">6</span>
-                <h2>Aanbevolen Zorgverleners</h2>
-            </div>
-            <div class="step-content">
-                <div id="recommendedProviders" class="recommended-providers"></div>
-                <a href="https://jvnds1969-png.github.io/Zorgverleners/" target="_blank" class="marketplace-link">Zoek meer in Marketplace</a>
-            </div>
-        </section>
-    </main>
+    <!-- STAP 2: Gevonden Termen & Zorgbundels -->
+    <section class="workflow-step" id="stap2">
+      <div class="step-header">
+        <span class="step-number">2</span>
+        <h2>Gevonden Termen & Zorgbundels</h2>
+      </div>
+      <div class="step-content">
+        <div class="extracted-section">
+          <h3>Gevonden medische termen</h3>
+          <div id="extractedTerms" class="terms-container"></div>
+        </div>
+        <div class="bundles-section">
+          <h3>Voorgestelde Zorgbundels</h3>
+          <div id="bundleList" class="bundle-list"></div>
+        </div>
+        <button id="generatePlan" class="btn-primary" disabled>Genereer Zorgplan</button>
+      </div>
+    </section>
 
-    <script>
-    // ========================
-    // ZORGBUNDELS DATA
-    // ========================
-    const zorgbundels = [
-        {
-            nr: 1,
-            naam: "Diabetes met verhoogd thuisrisico",
-            medischLexicon: ["diabetes mellitus", "DM2", "insulinetherapie", "hypoglycemie", "hyperglycemie", "HbA1c", "diabetische voet", "glucosecontrole", "suikerziekte"],
-            patientLexicon: ["suikerziekte", "suiker schommelt", "suiker te hoog", "suiker te laag", "bang voor hypo", "insuline", "veel plassen"],
-            klinisch: "Glycemies, symptomen hypo/hyper, voetstatus, gewicht.",
-            educatie: "Hypo-/hyperherkenning, glucosemeting, medicatieschema.",
-            functioneel: "Glucosemeter, weekdoos, voedingsadvies.",
-            coordinatie: "Huisarts-POH-dietist-thuisverpleging.",
-            monitoring: "Herhaalde hypos, glycemie >20, voetulcus.",
-            zorgverleners: ["Huisarts", "POH/diabetesverpleegkundige", "Thuisverpleging", "Dietist", "Podotherapeut", "Apotheker"]
-        },
-        {
-            nr: 2,
-            naam: "Polyfarmacie en medicatieveiligheid",
-            medischLexicon: ["polyfarmacie", "multimedicatie", "medicatielijst", "bijwerkingen", "medicatiefouten", "non-compliance", "STOPP/START", "hoogrisico-medicatie"],
-            patientLexicon: ["veel pillen", "medicijnen veranderd", "suf van medicatie", "vergeet medicijnen"],
-            klinisch: "Bijwerkingen, therapietrouw, aantal medicaties.",
-            educatie: "Medicatieschema, gevaar dubbelgebruik.",
-            functioneel: "Weekdoos, medicatierol, alarmen.",
-            coordinatie: "Huisarts-apotheker-thuisverpleging.",
-            monitoring: "Ernstige bijwerkingen, dubbelgebruik.",
-            zorgverleners: ["Huisarts", "Huisapotheker", "Thuisverpleging", "POH-ouderen"]
-        },
-        {
-            nr: 3,
-            naam: "Cardiovasculair hoog risico",
-            medischLexicon: ["hypertensie", "hoge bloeddruk", "cholesterol", "CVRM", "hartinfarct", "CVA", "TIA", "obesitas", "roker"],
-            patientLexicon: ["hoge bloeddruk", "cholesterol", "roken", "weinig beweging", "TIA gehad"],
-            klinisch: "Bloeddruk, lipiden, gewicht, rookstatus.",
-            educatie: "Leefstijl, beweging, rookstop.",
-            functioneel: "GLI, beweegprogramma, gezonde voeding.",
-            coordinatie: "POH-CVRM, dietist, fysiotherapeut.",
-            monitoring: "Zeer hoge bloeddruk, nieuwe angina/TIA.",
-            zorgverleners: ["Huisarts", "POH-CVRM", "Dietist", "Fysiotherapeut", "Apotheker"]
-        },
-        {
-            nr: 7,
-            naam: "Functionele achteruitgang en valrisico",
-            medischLexicon: ["mobiliteitsbeperking", "valincident", "frailty", "sarcopenie", "ADL-hulp"],
-            patientLexicon: ["gevallen", "niet zeker stappen", "opstaan moeilijk", "zwakker", "valangst"],
-            klinisch: "Mobiliteit, ADL, spierkracht, valincidenten.",
-            educatie: "Valrisico, veilig bewegen, hulpmiddelen.",
-            functioneel: "Oefenprogramma, woningaanpassingen.",
-            coordinatie: "Huisarts-kine-ergo-thuiszorg.",
-            monitoring: "Meerdere vallen, ernstige valangst.",
-            zorgverleners: ["Huisarts", "Kinesitherapeut", "Ergotherapeut", "Thuisverpleging"]
-        },
-        {
-            nr: 9,
-            naam: "Cognitieve kwetsbaarheid",
-            medischLexicon: ["dementie", "Alzheimer", "MCI", "delirium", "verwardheid", "geheugenstoornissen"],
-            patientLexicon: ["vergeet veel", "te ingewikkeld", "kluts kwijt", "pillen vergeten", "in de war"],
-            klinisch: "Orientatie, geheugen, ADL-zelfstandigheid.",
-            educatie: "Structuur, compensaties, medicatieondersteuning.",
-            functioneel: "Dag-/weekschemas, herinneringshulpmiddelen.",
-            coordinatie: "Huisarts-geriater-casemanager-thuiszorg.",
-            monitoring: "Acuut delier, wegloopgedrag.",
-            zorgverleners: ["Huisarts", "Geriater", "Casemanager", "Thuisverpleging"]
-        },
-        {
-            nr: 10,
-            naam: "Psychosociaal lijden en eenzaamheid",
-            medischLexicon: ["depressie", "angst", "rouw", "suicidale gedachten", "slaapproblemen", "eenzaamheid"],
-            patientLexicon: ["alleen", "te veel", "slecht slapen", "nergens zin in", "niet meer zitten"],
-            klinisch: "Depressie-/angstscreening, slaap.",
-            educatie: "Psycho-educatie, coping, zelfhulp.",
-            functioneel: "Sociale activiteiten, lotgenotengroepen.",
-            coordinatie: "Huisarts-POH-GGZ-psycholoog.",
-            monitoring: "Suicidegedachten, ernstige depressie.",
-            zorgverleners: ["Huisarts", "POH-GGZ", "Psycholoog", "Maatschappelijk werker"]
-        }
-    ];
+    <!-- STAP 3: Modus Selectie -->
+    <section class="workflow-step" id="stap3">
+      <div class="step-header">
+        <span class="step-number">3</span>
+        <h2>Kies Weergave</h2>
+      </div>
+      <div class="step-content">
+        <div class="mode-toggle" id="modeToggle">
+          <button id="modeProfessional" class="toggle-btn active">Professioneel</button>
+          <button id="modePatient" class="toggle-btn">Voor Patient (eenvoudig)</button>
+        </div>
+      </div>
+    </section>
 
-    // ========================
-    // STATE
-    // ========================
-    let currentDocument = null;
-    let extractedTerms = [];
-    let matchedBundles = [];
-    let selectedBundles = [];
-    let uploadedDocuments = [];
-    // ========================
-    // DOM ELEMENTS
-          document.addEventListener('DOMContentLoaded', () => {
-    // ========================
-    const uploadZone = document.getElementById('uploadZone');
-    const fileInput = document.getElementById('fileInput');
-    const uploadedFile = document.getElementById('uploadedFile');
-    const extractedData = document.getElementById('extractedData');
-    const lexiconMatches = document.getElementById('lexiconMatches');
-    const problemAreas = document.getElementById('problemAreas');
-    const uploadedFiles = document.getElementById('uploadedFiles');
-    const startAnalyse = document.getElementById('startAnalyse');    const carePlan = document.getElementById('carePlan');
-    const recommendedProviders = document.getElementById('recommendedProviders');
-    const btnProfessional = document.getElementById('btnProfessional');
-    const btnPatient = document.getElementById('btnPatient');
-    const exportPlan = document.getElementById('exportPlan');
+    <!-- STAP 4: Zorgplan Output -->
+    <section class="workflow-step" id="stap4">
+      <div class="step-header">
+        <span class="step-number">4</span>
+        <h2>Zorgplan</h2>
+      </div>
+      <div class="step-content">
+        <div id="planOutput" class="plan-output"></div>
+        <div class="plan-actions">
+          <button onclick="downloadPlan()" class="btn-secondary">Download als HTML</button>
+          <button onclick="printPlan()" class="btn-secondary">Afdrukken</button>
+        </div>
+      </div>
+    </section>
+  </main>
 
-    // ========================
-    // FILE UPLOAD
-    // ========================
-        const patientInfo = document.getElementById('patientInfo');
-const saveToHospital = document.getElementById('saveToHospital');
-    uploadZone.addEventListener('click', () => fileInput.click());
-    uploadZone.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        uploadZone.classList.add('dragover');
-    });
-    uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
-    uploadZone.addEventListener('drop', (e) => {
-        e.preventDefault();
-        uploadZone.classList.remove('dragover');
-        if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
-    });
-    // FILE INPUT - Meerdere bestanden toevoegen
-    fileInput.addEventListener('change', (e) => {
-        if (e.target.files.length) {
-            Array.from(e.target.files).forEach(file => {
-                uploadedDocuments.push(file);
-            });
-            renderUploadedFiles();
-            e.target.value = ''; // Reset input voor meer uploads
-        }
-    });
-    
-    // Render lijst van geüploade documenten
-    function renderUploadedFiles() {
-        if (uploadedDocuments.length === 0) {
-            uploadedFiles.classList.add('hidden');
-            startAnalyse.classList.add('hidden');
-            uploadZone.classList.remove('hidden');
-            return;
-        }
-        
-        uploadZone.classList.add('hidden');
-        uploadedFiles.classList.remove('hidden');
-        startAnalyse.classList.remove('hidden');
-        
-        uploadedFiles.innerHTML = uploadedDocuments.map((file, index) => `
-            <div class="file-item">
-                <span class="file-icon">📄</span>
-                <span class="file-name">${file.name}</span>
-                <button onclick="removeDocument(${index})" class="remove-btn">❌</button>
-            </div>
-        `).join('');
-    }
-    
-    // Verwijder document uit lijst
-    window.removeDocument = function(index) {
-        uploadedDocuments.splice(index, 1);
-        renderUploadedFiles();
-        if (uploadedDocuments.length === 0) {
-            resetAll();
-        }
-    };
-    
-    // Start Analyse knop
-    startAnalyse.addEventListener('click', () => {
-        if (uploadedDocuments.length === 0) return;
-        
-        extractedData.innerHTML = '<div class="loading">Analyseren van ' + uploadedDocuments.length + ' document(en)...</div>';
-        
-        // Lees alle documenten en combineer de content
-        let allContent = '';
-        let filesRead = 0;
-        
-        uploadedDocuments.forEach(file => {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                allContent += '\n--- ' + file.name + ' ---\n' + e.target.result + '\n';
-                filesRead++;
-                
-                if (filesRead === uploadedDocuments.length) {
-                    // Alle documenten gelezen, start analyse
-                    analyzeContent(allContent, uploadedDocuments.map(f => f.name).join(', '));
-                }
-            };
-            reader.readAsText(file);
-        });
-    });    }
+  <footer>
+    <p>Zorgstart - Zorgplanproces v2.0</p>
+  </footer>
 
-    window.removeFile = function() {
-        currentDocument = null;
-        uploadedFile.classList.add('hidden');
-        uploadZone.classList.remove('hidden');
-        resetAll();
-    };
-
-    function resetAll() {
-        extractedTerms = [];
-        matchedBundles = [];
-        selectedBundles = [];
-        extractedData.innerHTML = 'Wacht op document...';
-        lexiconMatches.innerHTML = '';
-        problemAreas.innerHTML = '';
-        suggestedBundles.innerHTML = '';
-        carePlan.innerHTML = '';
-        recommendedProviders.innerHTML = '';
-        exportPlan.classList.add('hidden');
-    }
-
-    // ========================
-    // FILE READING AND ANALYSIS
-    // ========================
-    
-    function readFileContent(file) {
-        extractedData.innerHTML = '<div class="loading">Bestand inlezen...</div>';
-        
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const content = e.target.result;
-            analyzeContent(content, file.name);
-        };
-        reader.readAsText(file);
-    }
-    
-    function analyzeContent(content, filename) {
-        const text = content.toLowerCase();
-        const foundTerms = new Set();
-        
-        // Zoek alle medische en patient termen
-        zorgbundels.forEach(bundle => {
-            [...bundle.medischLexicon, ...bundle.patientLexicon].forEach(term => {
-                if (text.includes(term.toLowerCase())) {
-                    foundTerms.add(term);
-                }
-            });
-        });
-        
-        extractedTerms = [...foundTerms];
-        
-        // Toon gevonden termen
-        if (extractedTerms.length > 0) {
-            extractedData.innerHTML = 
-                '<div class="extracted-item"><strong>Bestand:</strong> ' + filename + '</div>' +
-                '<div class="extracted-item"><strong>Gevonden termen:</strong> ' + extractedTerms.join(', ') + '</div>' +
-                '<div class="extracted-item"><strong>Totaal:</strong> ' + extractedTerms.length + ' medische termen gedetecteerd</div>';
-        } else {
-            extractedData.innerHTML = 
-                '<div class="extracted-item"><strong>Bestand:</strong> ' + filename + '</div>' +
-                '<div class="extracted-item" style="color:#ef4444">Geen medische termen gevonden in dit document. Upload een document met medische informatie.</div>';
-        }
-        
-        matchWithLexicon();
-    }
-
-    // ========================
-    // LEXICON MATCHING
-    // ========================
-    function matchWithLexicon() {
-        matchedBundles = [];
-        const matchedTerms = [];
-        
-        extractedTerms.forEach(term => {
-            const termLower = term.toLowerCase();
-            zorgbundels.forEach(bundle => {
-                const allTerms = [...bundle.medischLexicon, ...bundle.patientLexicon];
-                allTerms.forEach(lexTerm => {
-                    if (termLower.includes(lexTerm.toLowerCase()) || lexTerm.toLowerCase().includes(termLower)) {
-                        if (!matchedBundles.includes(bundle)) {
-                            matchedBundles.push(bundle);
-                        }
-                        matchedTerms.push({term: term, lexicon: lexTerm, bundle: bundle.naam});
-                    }
-                });
-            });
-        });
-        
-        lexiconMatches.innerHTML = matchedTerms.length > 0 
-            ? matchedTerms.map(m => `<span class="match-tag" title="${m.bundle}">${m.term} - ${m.lexicon}</span>`).join('')
-            : '<p>Geen matches gevonden</p>';
-        
-        renderProblemAreas();
-    }
-
-    // ========================
-    // PROBLEM AREAS
-    // ========================
-    function renderProblemAreas() {
-        if (matchedBundles.length === 0) {
-            problemAreas.innerHTML = '<p class="empty">Upload een document om probleemgebieden te detecteren</p>';
-            return;
-        }
-        
-        problemAreas.innerHTML = matchedBundles.map(bundle => `
-            <div class="problem-card" data-nr="${bundle.nr}">
-                <label>
-                    <input type="checkbox" checked onchange="toggleBundle(${bundle.nr})">
-                    <span class="problem-name">${bundle.nr}. ${bundle.naam}</span>
-                </label>
-                <p class="problem-desc">${bundle.klinisch}</p>
-            </div>
-        `).join('');
-        
-        selectedBundles = [...matchedBundles];
-        renderSuggestedBundles();
-    }
-
-    window.toggleBundle = function(nr) {
-        const bundle = zorgbundels.find(b => b.nr === nr);
-        const idx = selectedBundles.findIndex(b => b.nr === nr);
-        if (idx > -1) {
-            selectedBundles.splice(idx, 1);
-        } else {
-            selectedBundles.push(bundle);
-        }
-        renderSuggestedBundles();
-        renderCarePlan();
-        renderProviders();
-    };
-
-    // ========================
-    // SUGGESTED BUNDLES
-    // ========================
-    function renderSuggestedBundles() {
-        if (selectedBundles.length === 0) {
-            suggestedBundles.innerHTML = '<p class="empty">Selecteer probleemgebieden</p>';
-            return;
-        }
-        
-        suggestedBundles.innerHTML = selectedBundles.map(bundle => `
-            <div class="bundle-card">
-                <h4>${bundle.nr}. ${bundle.naam}</h4>
-                <div class="bundle-details">
-                    <div class="detail-row"><strong>Klinisch:</strong> ${bundle.klinisch}</div>
-                    <div class="detail-row"><strong>Educatie:</strong> ${bundle.educatie}</div>
-                    <div class="detail-row"><strong>Functioneel:</strong> ${bundle.functioneel}</div>
-                    <div class="detail-row"><strong>Coordinatie:</strong> ${bundle.coordinatie}</div>
-                    <div class="detail-row alert"><strong>Monitoring:</strong> ${bundle.monitoring}</div>
-                </div>
-            </div>
-        `).join('');
-        
-        renderCarePlan();
-        renderProviders();
-    }
-
-    // ========================
-    // CARE PLAN
-    // ========================
-    btnProfessional.addEventListener('click', () => {
-        planMode = 'professional';
-        btnProfessional.classList.add('active');
-        btnPatient.classList.remove('active');
-        renderCarePlan();
-    });
-
-    btnPatient.addEventListener('click', () => {
-        planMode = 'patient';
-        btnPatient.classList.add('active');
-        btnProfessional.classList.remove('active');
-        renderCarePlan();
-    });
-
-    function renderCarePlan() {
-        if (selectedBundles.length === 0) {
-            carePlan.innerHTML = '<p class="empty">Selecteer zorgbundels om zorgplan te genereren</p>';
-            exportPlan.classList.add('hidden');
-            return;
-        }
-        
-        if (planMode === 'professional') {
-            carePlan.innerHTML = `
-                <div class="plan-professional">
-                    <h3>Professioneel Zorgplan</h3>
-                    ${selectedBundles.map(b => `
-                        <div class="plan-section">
-                            <h4>${b.nr}. ${b.naam}</h4>
-                            <table class="plan-table">
-                                <tr><th>Klinische opvolging</th><td>${b.klinisch}</td></tr>
-                                <tr><th>Educatie</th><td>${b.educatie}</td></tr>
-                                <tr><th>Functioneel</th><td>${b.functioneel}</td></tr>
-                                <tr><th>Coordinatie</th><td>${b.coordinatie}</td></tr>
-                                <tr class="alert-row"><th>Escalatie</th><td>${b.monitoring}</td></tr>
-                            </table>
-                        </div>
-                    `).join('')}
-                </div>
-            `;
-        } else {
-            carePlan.innerHTML = `
-                <div class="plan-patient">
-                    <h3>Uw Persoonlijk Zorgplan</h3>
-                    <p class="intro">Dit plan helpt u om goed voor uzelf te zorgen thuis.</p>
-                    ${selectedBundles.map(b => `
-                        <div class="plan-section-simple">
-                            <h4>${simplifyName(b.naam)}</h4>
-                            <div class="simple-item"><span class="icon">Wat moet ik weten?</span><p>${simplifyText(b.educatie)}</p></div>
-                            <div class="simple-item"><span class="icon">Wat heb ik nodig?</span><p>${simplifyText(b.functioneel)}</p></div>
-                            <div class="simple-item alert"><span class="icon">Wanneer bellen?</span><p>${simplifyText(b.monitoring)}</p></div>
-                        </div>
-                    `).join('')}
-                </div>
-            `;
-        }
-        exportPlan.classList.remove('hidden');
-    }
-
-    function simplifyName(name) {
-        const map = {
-                patientInfo.classList.remove('hidden');
-            'Diabetes met verhoogd thuisrisico': 'Uw suikerziekte',
-            'Polyfarmacie en medicatieveiligheid': 'Uw medicijnen',
-            'Cardiovasculair hoog risico': 'Uw hart en bloedvaten',
-            'Functionele achteruitgang en valrisico': 'Veilig bewegen',
-            'Cognitieve kwetsbaarheid': 'Uw geheugen',
-            'Psychosociaal lijden en eenzaamheid': 'Uw gemoedstoestand'
-        };
-        return map[name] || name;
-    }
-
-    function simplifyText(text) {
-        return text.replace(/\./g, '. ').replace(/,/g, ', ');
-    }
-
-    // ========================
-    // PROVIDERS
-    // ========================
-    function renderProviders() {
-        if (selectedBundles.length === 0) {
-            recommendedProviders.innerHTML = '<p class="empty">Geen aanbevelingen beschikbaar</p>';
-            return;
-        }
-        
-        const allProviders = new Set();
-        selectedBundles.forEach(b => b.zorgverleners.forEach(z => allProviders.add(z)));
-        
-        recommendedProviders.innerHTML = Array.from(allProviders).map(provider => `
-            <div class="provider-card">
-                <span class="provider-icon">+</span>
-                <span class="provider-name">${provider}</span>
-            </div>
-        `).join('');
-    }
-
-    // ========================
-    // EXPORT
-    // ========================
-    exportPlan.addEventListener('click', () => {
-        alert('Zorgplan export functionaliteit - In een volledige implementatie zou dit een PDF genereren.');
-    });
-
-            // ========================
-    // OPSLAAN NAAR ZIEKENHUIS
-    // ========================
-    
-    saveToHospital.addEventListener('click', () => {
-        // Haal patiëntgegevens op
-        const patientName = document.getElementById('patientName').value;
-        const patientAfdeling = document.getElementById('patientAfdeling').value;
-        const patientBirthdate = document.getElementById('patientBirthdate').value;
-        const patientDischargeDate = document.getElementById('patientDischargeDate').value;
-        const patientSpecialist = document.getElementById('patientSpecialist').value;
-        
-        // Valideer
-        if (!patientName || !patientAfdeling || !patientBirthdate || !patientDischargeDate || !patientSpecialist) {
-            alert('⚠️ Vul alle velden in om de patiënt op te slaan.');
-            return;
-        }
-        
-        // Haal bestaande patiënten op uit localStorage
-        let patients = JSON.parse(localStorage.getItem('hospitalPatients') || '[]');
-        
-        // Maak nieuw patiënt object
-        const newPatient = {
-            nr: patients.length + 1,
-            naam: patientName,
-            afdeling: patientAfdeling,
-            geboortedatum: patientBirthdate,
-            ontslagdatum: patientDischargeDate,
-            specialist: patientSpecialist,
-            zorgplan: carePlan.innerHTML,
-            selectedBundles: selectedBundles.map(b => b.naam),
-            timestamp: new Date().toISOString()
-        };
-        
-        // Voeg toe aan lijst
-        patients.push(newPatient);
-        
-        // Sla op in localStorage
-        localStorage.setItem('hospitalPatients', JSON.stringify(patients));
-        
-        // Toon bevestiging
-        alert('✅ Patiënt ' + patientName + ' is opgeslagen in Mijn Patiënten!');
-        
-        // Optioneel: terug naar ziekenhuis
-        if (confirm('Wilt u terug naar de Ziekenhuis pagina?')) {
-            window.location.href = 'https://jvnds1969-png.github.io/Ziekenhuis/';
-        }
-    });
-    </script>
-      }); // End DOMContentLoaded
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.js"></script>
-<script src="script.js"></script>
-    </script.js>
-    </body>
+  <script src="script.js"></script>
+</body>
 </html>
