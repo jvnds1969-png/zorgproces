@@ -368,6 +368,7 @@ const stap3 = document.getElementById('stap3');
 const stap4 = document.getElementById('stap4');
 const fileInput = document.getElementById('fileInput');
 const documentList = document.getElementById('documentList');
+    const uploadedDocsTitle = document.getElementById('uploadedDocsTitle');
 const extractTermsBtn = document.getElementById('extractTerms');
 const extractedTermsDiv = document.getElementById('extractedTerms');
 const bundleList = document.getElementById('bundleList');
@@ -442,6 +443,10 @@ function updateDocumentList() {
   if (extractTermsBtn) {
     extractTermsBtn.disabled = uploadedDocuments.length === 0;
   }
+      // Toon/verberg de titel 'Opgeladen documenten'
+    if (uploadedDocsTitle) {
+      uploadedDocsTitle.style.display = uploadedDocuments.length > 0 ? 'block' : 'none';
+    }
 }
 
 function removeDocument(index) {
