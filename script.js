@@ -890,4 +890,8 @@ document.addEventListener('DOMContentLoaded', function() {
   // Initialize
   showStap(1);
   console.log('Zorgplan applicatie geladen!');
+
+    // Maak functies globaal beschikbaar voor onclick handlers
+  window.removeDocument = removeDocument;
+  window.toggleBundle = toggleBundle;
 });
