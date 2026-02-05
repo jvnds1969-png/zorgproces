@@ -836,6 +836,25 @@ document.addEventListener('DOMContentLoaded', function() {
   if (fileInput) {
     fileInput.addEventListener('change', handleFileUpload);
   }
+
+    // Upload zone click handler
+  const uploadZone = document.getElementById('uploadZone');
+  if (uploadZone && fileInput) {
+    uploadZone.addEventListener('click', () => fileInput.click());
+    uploadZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadZone.classList.add('dragover');
+    });
+    uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
+    uploadZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadZone.classList.remove('dragover');
+      if (e.dataTransfer.files.length) {
+        const event = { target: { files: e.dataTransfer.files } };
+        handleFileUpload(event);
+      }
+    });
+  }
   
   // Extract terms button
   if (extractTermsBtn) {
