@@ -822,3 +822,26 @@ footer {
     color: #6b7280;
     font-size: 0.9rem;
 }
+
+/* Uploaded Documents Section */
+.uploaded-documents-section {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background: #f0f9ff;
+    border-radius: 8px;
+    border: 1px solid #bfdbfe;
+}
+
+.uploaded-docs-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1e40af;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.uploaded-docs-title::before {
+    content: '📄';
+}
