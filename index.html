@@ -21,7 +21,7 @@
   </header>
 
   <main>
-    <!-- STAP 1: Document Upload & Patient Info -->
+    <!-- STAP 1 -->
     <section class="workflow-step active" id="stap1">
       <div class="step-header">
         <span class="step-number">1</span>
@@ -38,37 +38,33 @@
             <input type="date" id="patientGeboortedatum">
           </div>
         </div>
-        <div class="upload-zone" id="uploadZone">
+        <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()" style="cursor:pointer">
           <div class="upload-icon">+</div>
           <p>Sleep PDF/TXT hierheen of klik om te uploaden</p>
           <p class="upload-hint">Bingli-rapport, medicatieschema, ontslagbrief...</p>
-          <input type="file" id="fileInput" accept=".pdf,.txt,.json" multiple hidden>
+          <input type="file" id="fileInput" accept=".pdf,.txt,.json" multiple style="display:none">
         </div>
         <div id="documentList" class="document-list"></div>
         <button id="extractTerms" class="btn-primary" disabled>Analyseer Documenten</button>
       </div>
     </section>
 
-    <!-- STAP 2: Gevonden Termen & Zorgbundels -->
+    <!-- STAP 2 -->
     <section class="workflow-step" id="stap2">
       <div class="step-header">
         <span class="step-number">2</span>
         <h2>Gevonden Termen & Zorgbundels</h2>
       </div>
       <div class="step-content">
-        <div class="extracted-section">
-          <h3>Gevonden medische termen</h3>
-          <div id="extractedTerms" class="terms-container"></div>
-        </div>
-        <div class="bundles-section">
-          <h3>Voorgestelde Zorgbundels</h3>
-          <div id="bundleList" class="bundle-list"></div>
-        </div>
+        <h3>Gevonden medische termen</h3>
+        <div id="extractedTerms"></div>
+        <h3>Voorgestelde Zorgbundels</h3>
+        <div id="bundleList"></div>
         <button id="generatePlan" class="btn-primary" disabled>Genereer Zorgplan</button>
       </div>
     </section>
 
-    <!-- STAP 3: Modus Selectie -->
+    <!-- STAP 3 -->
     <section class="workflow-step" id="stap3">
       <div class="step-header">
         <span class="step-number">3</span>
@@ -82,14 +78,14 @@
       </div>
     </section>
 
-    <!-- STAP 4: Zorgplan Output -->
+    <!-- STAP 4 -->
     <section class="workflow-step" id="stap4">
       <div class="step-header">
         <span class="step-number">4</span>
         <h2>Zorgplan</h2>
       </div>
       <div class="step-content">
-        <div id="planOutput" class="plan-output"></div>
+        <div id="planOutput"></div>
         <div class="plan-actions">
           <button onclick="downloadPlan()" class="btn-secondary">Download als HTML</button>
           <button onclick="printPlan()" class="btn-secondary">Afdrukken</button>
