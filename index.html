@@ -17,6 +17,7 @@
       <a href="https://jvnds1969-png.github.io/Zorgbundels-en-probleemgebieden/" target="_blank">Zorgbundels</a>
       <a href="https://jvnds1969-png.github.io/Zorgverleners/" target="_blank">Zorgverleners</a>
       <a href="https://test.onepatient.bingli.be/dashboard" target="_blank">OnePatient</a>
+      <a href="https://www.bcfi.be/nl/chapters" target="_blank">BCFI Repertorium</a>
     </nav>
   </header>
 
@@ -25,7 +26,7 @@
     <section class="workflow-step active" id="stap1">
       <div class="step-header">
         <span class="step-number">1</span>
-        <h2>Document Uploaden & Patientgegevens</h2>
+        <h2>Document Uploaden &amp; Patientgegevens</h2>
       </div>
       <div class="step-content">
         <div class="patient-form">
@@ -38,16 +39,19 @@
             <input type="date" id="patientGeboortedatum">
           </div>
         </div>
-        <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()" style="cursor:pointer">
+        <div class="upload-zone" id="uploadZone">
           <div class="upload-icon">+</div>
           <p>Sleep PDF/TXT hierheen of klik om te uploaden</p>
           <p class="upload-hint">Bingli-rapport, medicatieschema, ontslagbrief...</p>
           <input type="file" id="fileInput" accept=".pdf,.txt,.json" multiple style="display:none">
         </div>
-                    <div class="uploaded-documents-section">
-              <h4 class="uploaded-docs-title" id="uploadedDocsTitle" style="display:none;">Opgeladen documenten:</h4>
-              <div id="documentList" class="document-list"></div>
-            </div>
+
+        <!-- OPGELADEN DOCUMENTEN LIJST -->
+        <div class="uploaded-documents-section">
+          <h4 class="uploaded-docs-title" id="uploadedDocsTitle" style="display:none;">Opgeladen documenten:</h4>
+          <ul id="documentList" class="uploaded-documents-list"></ul>
+        </div>
+
         <button id="extractTerms" class="btn-primary" disabled>Analyseer Documenten</button>
       </div>
     </section>
@@ -56,13 +60,20 @@
     <section class="workflow-step" id="stap2">
       <div class="step-header">
         <span class="step-number">2</span>
-        <h2>Gevonden Termen & Zorgbundels</h2>
+        <h2>Gevonden Termen &amp; Zorgbundels</h2>
       </div>
       <div class="step-content">
         <h3>Gevonden medische termen</h3>
         <div id="extractedTerms"></div>
         <h3>Voorgestelde Zorgbundels</h3>
         <div id="bundleList"></div>
+
+        <!-- MEDICATIE BCFI SECTIE -->
+        <div id="medicatieSection" style="display:none;">
+          <h3>Medicatie-informatie (bron: BCFI Repertorium)</h3>
+          <div id="medicatieList"></div>
+        </div>
+
         <button id="generatePlan" class="btn-primary" disabled>Genereer Zorgplan</button>
       </div>
     </section>
@@ -98,7 +109,7 @@
   </main>
 
   <footer>
-    <p>Zorgstart - Zorgplanproces v2.0</p>
+    <p>Zorgstart - Zorgplanproces v2.1 | Medicatie-info: <a href="https://www.bcfi.be/nl/chapters" target="_blank">BCFI Repertorium</a></p>
   </footer>
 
   <script src="script.js"></script>
