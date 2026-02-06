@@ -44,6 +44,102 @@
     if (m < 0 || (m === 0 && nu.getDate() < geb.getDate())) leeftijd--;
     return leeftijd;
   }
+// ========================
+// DOCUMENT PROCESSING FUNCTIONS  
+// ========================
+
+// PDF.js worker configuratie
+if (typeof pdfjsLib !== 'undefined') {
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+}
+
+// Extract text from PDF
+async function extractTextFromPDF(arrayBuffer) {
+    try {
+        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+        let fullText = '';
+        for (let i = 1; i <= pdf.numPages; i++) {
+            const page = await pdf.getPage(i);
+            const textContent = await page.getTextContent();
+            const pageText = textContent.items.map(item => item.str).join(' ');
+            fullText += pageText + '\n';
+        }
+        return fullText;
+    } catch (error) {
+        console.error('PDF extraction error:', error);
+        return '';
+    }
+}
+
+// Extract text from Word
+async function extractTextFromWord(arrayBuffer) {
+    try {
+        const result = await mammoth.extractRawText({ arrayBuffer: arrayBuffer });
+        return result.value;
+    } catch (error) {
+        console.error('Word extraction error:', error);
+        return '';
+    }
+}
+
+// Render PDF preview
+async function renderPDFPreview(arrayBuffer, container) {
+    try {
+        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+        const page = await pdf.getPage(1);
+        const scale = 1.0;
+        const viewport = page.getViewport({ scale: scale });
+        const canvas = document.createElement('canvas');
+        canvas.className = 'pdf-preview-canvas';
+        const context = canvas.getContext('2d');
+        const maxWidth = 600;
+        const ratio = maxWidth / viewport.width;
+        canvas.width = maxWidth;
+        canvas.height = viewport.height * ratio;
+        const scaledViewport = page.getViewport({ scale: scale * ratio });
+        await page.render({ canvasContext: context, viewport: scaledViewport }).promise;
+        const wrapper = document.createElement('div');
+        wrapper.className = 'preview-item pdf-preview';
+        wrapper.innerHTML = `<div class="preview-header"><span class="preview-icon">📄</span><span class="preview-label">PDF Document - Pagina 1 van ${pdf.numPages}</span></div>`;
+        wrapper.appendChild(canvas);
+        container.appendChild(wrapper);
+    } catch (error) {
+        console.error('PDF preview error:', error);
+    }
+}
+
+// Render Word preview
+async function renderWordPreview(arrayBuffer, container, fileName) {
+    try {
+        const result = await mammoth.convertToHtml({ arrayBuffer: arrayBuffer });
+        const wrapper = document.createElement('div');
+        wrapper.className = 'preview-item word-preview';
+        wrapper.innerHTML = `
+            <div class="preview-header">
+                <span class="preview-icon">📝</span>
+                <span class="preview-label">Word Document: ${escapeHtml(fileName)}</span>
+            </div>
+            <div class="preview-content word-content">${result.value}</div>
+        `;
+        container.appendChild(wrapper);
+    } catch (error) {
+        console.error('Word preview error:', error);
+    }
+}
+
+// Render text preview
+function renderTextPreview(content, container, fileName) {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'preview-item text-preview';
+    wrapper.innerHTML = `
+        <div class="preview-header">
+            <span class="preview-icon">📃</span>
+            <span class="preview-label">Tekst Document: ${escapeHtml(fileName)}</span>
+        </div>
+        <div class="preview-content text-content"><pre>${escapeHtml(content.substring(0, 2000))}${content.length > 2000 ? '\n\n... (bestand afgekort voor preview)' : ''}</pre></div>
+    `;
+    container.appendChild(wrapper);
+}
 
   // ========================
   // MEDISCH LEXICON - ZORGBUNDELS
