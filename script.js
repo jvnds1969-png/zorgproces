@@ -431,14 +431,13 @@ function updateDocumentList() {
   if (!documentList) return;
   documentList.innerHTML = '';
   uploadedDocuments.forEach((doc, index) => {
-    const div = document.createElement('div');
-    div.className = 'document-item';
-    div.innerHTML = `
-      <span class="doc-icon">📄</span>
-      <span class="doc-name">${doc.name}</span>
-      <button onclick="removeDocument(${index})" class="remove-btn">✕</button>
+          const li = document.createElement('li');
+      li.className = 'uploaded-document-item';
+      li.innerHTML = `      <span class="doc-icon">📄</span>
+        <span class="doc-name">${doc.name}</span>
+        <button type="button" class="doc-remove-btn" data-index="${index}">✕</button>`;
     `;
-    documentList.appendChild(div);
+    documentList.appendChild(li);
   });
   if (extractTermsBtn) {
     extractTermsBtn.disabled = uploadedDocuments.length === 0;
