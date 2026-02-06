@@ -24,7 +24,6 @@
       const match = scriptText.match(/const\s+zorgbundels\s*=\s*(\[[\s\S]+?\]);/);
       if (match && match[1]) {
         // Safely evaluate the array
-        // (houdt je bestaande logica intact)
         // eslint-disable-next-line no-eval
         ZORGBUNDELS = eval(match[1]);
         console.log(`✅ Geladen: ${ZORGBUNDELS.length} zorgbundels`);
@@ -55,9 +54,15 @@
     input.type = "file";
     input.id = "fileInput";
     input.accept = ".pdf,.docx,.txt";
+    input.multiple = true; // ✅ meerdere tegelijk
     input.style.display = "none";
     document.body.appendChild(input);
     fileInput = input;
+  } else {
+    // Ensure multiple even if in HTML
+    fileInput.multiple = true; // ✅ meerdere tegelijk
+    // (accept laten zoals in HTML, maar zet veilig als het ontbreekt)
+    if (!fileInput.accept) fileInput.accept = ".pdf,.docx,.txt";
   }
 
   const documentList = document.getElementById("documentList");
@@ -87,7 +92,9 @@
   const stap4El = document.getElementById("stap4");
 
   // ==================== STATE ====================
-  let currentFile = null;
+  let uploadedFiles = []; // ✅ multiple
+  let activeFile = null; // ✅ actief document (preview/analyse)
+
   let currentTextContent = "";
   let patientNaam = "";
   let patientGeboortedatum = "";
@@ -118,54 +125,6 @@
     if (previewContainer) previewContainer.innerHTML = "";
     safeSetDisplay(previewSection, "none");
     currentTextContent = "";
-  }
-
-  function setUploadedUI(file) {
-    if (!documentList || !uploadedDocsTitle || !extractBtn) return;
-
-    documentList.innerHTML = "";
-    const li = document.createElement("li");
-    li.className = "uploaded-doc-item";
-
-    const left = document.createElement("div");
-    left.className = "uploaded-doc-left";
-    left.innerHTML = `<strong>${escapeHtml(file.name)}</strong><div class="uploaded-doc-meta">${formatBytes(
-      file.size
-    )} • ${escapeHtml(file.type || "onbekend")}</div>`;
-
-    const actions = document.createElement("div");
-    actions.className = "uploaded-doc-actions";
-
-    const btnPreview = document.createElement("button");
-    btnPreview.type = "button";
-    btnPreview.className = "btn-secondary";
-    btnPreview.textContent = "Preview";
-    btnPreview.addEventListener("click", () => previewFile(file));
-
-    const btnRemove = document.createElement("button");
-    btnRemove.type = "button";
-    btnRemove.className = "btn-secondary";
-    btnRemove.textContent = "Verwijder";
-    btnRemove.addEventListener("click", () => removeCurrentFile());
-
-    actions.appendChild(btnPreview);
-    actions.appendChild(btnRemove);
-    li.appendChild(left);
-    li.appendChild(actions);
-    documentList.appendChild(li);
-
-    uploadedDocsTitle.style.display = "block";
-    extractBtn.disabled = false;
-  }
-
-  function removeCurrentFile() {
-    currentFile = null;
-    if (fileInput) fileInput.value = "";
-    if (documentList) documentList.innerHTML = "";
-    safeSetDisplay(uploadedDocsTitle, "none");
-    safeDisable(extractBtn, true);
-    resetPreview();
-    resetWorkflow();
   }
 
   function resetWorkflow() {
@@ -221,17 +180,115 @@
     return name.endsWith(".pdf") || name.endsWith(".docx") || name.endsWith(".txt");
   }
 
-  function handleFile(file) {
-    if (!file) return;
-    if (!isAllowed(file)) {
-      showError("Bestandstype niet ondersteund. Gebruik .pdf, .docx of .txt");
-      return;
+  function renderUploadedList() {
+    if (!documentList || !uploadedDocsTitle || !extractBtn) return;
+
+    documentList.innerHTML = "";
+
+    uploadedFiles.forEach((file, idx) => {
+      const li = document.createElement("li");
+      li.className = "uploaded-doc-item";
+
+      const left = document.createElement("div");
+      left.className = "uploaded-doc-left";
+
+      const isActive = activeFile && file === activeFile;
+      left.innerHTML = `
+        <strong>${escapeHtml(file.name)}</strong>
+        <div class="uploaded-doc-meta">${formatBytes(file.size)} • ${escapeHtml(file.type || "onbekend")}</div>
+        ${isActive ? `<div class="uploaded-doc-meta"><em>Actief document</em></div>` : ""}
+      `;
+
+      const actions = document.createElement("div");
+      actions.className = "uploaded-doc-actions";
+
+      const btnPreview = document.createElement("button");
+      btnPreview.type = "button";
+      btnPreview.className = "btn-secondary";
+      btnPreview.textContent = "Preview";
+      btnPreview.addEventListener("click", () => {
+        activeFile = file;
+        resetPreview();
+        resetWorkflow();
+        renderUploadedList();
+        previewFile(file);
+      });
+
+      const btnRemove = document.createElement("button");
+      btnRemove.type = "button";
+      btnRemove.className = "btn-secondary";
+      btnRemove.textContent = "Verwijder";
+      btnRemove.addEventListener("click", () => removeFileAt(idx));
+
+      actions.appendChild(btnPreview);
+      actions.appendChild(btnRemove);
+
+      li.appendChild(left);
+      li.appendChild(actions);
+      documentList.appendChild(li);
+    });
+
+    uploadedDocsTitle.style.display = uploadedFiles.length ? "block" : "none";
+    extractBtn.disabled = uploadedFiles.length === 0;
+  }
+
+  function removeFileAt(index) {
+    if (index < 0 || index >= uploadedFiles.length) return;
+
+    const removed = uploadedFiles.splice(index, 1)[0];
+
+    // als het actieve document verwijderd is: kies nieuw actief of null
+    if (activeFile === removed) {
+      activeFile = uploadedFiles.length ? uploadedFiles[uploadedFiles.length - 1] : null;
     }
-    currentFile = file;
+
+    // UI reset
     resetPreview();
     resetWorkflow();
-    setUploadedUI(file);
-    previewFile(file);
+    renderUploadedList();
+
+    if (activeFile) previewFile(activeFile);
+    else {
+      if (fileInput) fileInput.value = "";
+      safeDisable(extractBtn, true);
+    }
+  }
+
+  function removeCurrentFile() {
+    uploadedFiles = [];
+    activeFile = null;
+    if (fileInput) fileInput.value = "";
+    if (documentList) documentList.innerHTML = "";
+    safeSetDisplay(uploadedDocsTitle, "none");
+    safeDisable(extractBtn, true);
+    resetPreview();
+    resetWorkflow();
+  }
+
+  function handleFiles(files) {
+    const list = Array.from(files || []).filter(Boolean);
+    if (list.length === 0) return;
+
+    const allowed = list.filter(isAllowed);
+    const rejected = list.filter((f) => !isAllowed(f));
+
+    if (rejected.length) {
+      showError("Een of meerdere bestanden zijn niet ondersteund. Gebruik .pdf, .docx of .txt");
+    }
+    if (allowed.length === 0) return;
+
+    for (const f of allowed) {
+      const key = `${f.name}__${f.size}__${f.lastModified}`;
+      const exists = uploadedFiles.some((x) => `${x.name}__${x.size}__${x.lastModified}` === key);
+      if (!exists) uploadedFiles.push(f);
+    }
+
+    activeFile = allowed[allowed.length - 1];
+
+    resetPreview();
+    resetWorkflow();
+    renderUploadedList();
+    previewFile(activeFile);
   }
 
   // ==================== PREVIEW FUNCTIONS ====================
@@ -401,7 +458,6 @@
       .filter((x) => x.s > 0)
       .sort((a, c) => c.s - a.s);
 
-    // Toon alles met score>0 (houdt inhoud/keuze bij jou)
     return scored.map((x) => x.b);
   }
 
@@ -433,6 +489,8 @@
 
     if (!bundles || bundles.length === 0) {
       suggestedBundlesDiv.innerHTML = "<p>Geen bundels geselecteerd</p>";
+      selectedBundles = [];
+      safeDisable(generatePlanBtn, true);
       return;
     }
 
@@ -440,7 +498,6 @@
       <div class="bundle-list">
         ${bundles
           .map((b) => {
-            const id = `bundle_${escapeHtml(String(b.nr ?? b.naam ?? Math.random()))}`;
             return `
               <label class="bundle-item">
                 <input type="checkbox" data-bundle-nr="${escapeHtml(String(b.nr ?? ""))}" checked>
@@ -452,10 +509,8 @@
       </div>
     `;
 
-    // Init geselecteerde bundels op basis van checkboxes
     selectedBundles = bundles.slice();
 
-    // Listen changes
     suggestedBundlesDiv.querySelectorAll('input[type="checkbox"][data-bundle-nr]').forEach((cb) => {
       cb.addEventListener("change", () => {
         const checkedNrs = Array.from(
@@ -472,7 +527,6 @@
 
   // ==================== ZORGPLAN GENERATIE (BASIS) ====================
   function buildZorgplanText() {
-    // Geen inhoudelijke “nieuwe” claims; enkel een basis weergave van selectie
     const bundleNames = (selectedBundles || []).map((b) => b.naam).filter(Boolean);
 
     const prof = `
@@ -512,7 +566,7 @@ Wat we hebben herkend in je document:
 
   // ==================== ACTIONS ====================
   function onExtractTerms() {
-    if (!currentFile) {
+    if (!activeFile) {
       showError("Geen bestand geselecteerd");
       return;
     }
@@ -527,8 +581,6 @@ Wat we hebben herkend in je document:
     const bundles = suggestBundles(currentTextContent || "");
     renderSuggestedBundles(bundles);
 
-    // medicatieInfo: laat staan zoals je resettekst (geen inhoudelijke parsing toegevoegd)
-    // (als je later wél medicatie extractie wil, kan dat apart)
     safeSetHtml(medicatieInfoDiv, "<p>Geen medicatie-informatie beschikbaar</p>");
   }
 
@@ -538,11 +590,9 @@ Wat we hebben herkend in je document:
 
     currentZorgplan = buildZorgplanText();
 
-    // Default view
     if (viewPatientRadio?.checked) renderZorgplan("patient");
     else renderZorgplan("prof");
 
-    // Enable download/print if buttons exist
     if (downloadBtn) downloadBtn.disabled = false;
     if (printBtn) printBtn.disabled = false;
   }
@@ -605,16 +655,17 @@ Wat we hebben herkend in je document:
     uploadZone.addEventListener("drop", (e) => {
       e.preventDefault();
       uploadZone.classList.remove("dragover");
-      const file = e.dataTransfer?.files?.[0];
-      handleFile(file);
+      handleFiles(e.dataTransfer?.files || []);
     });
   }
 
   function bindFileInput() {
     if (!fileInput) return;
     fileInput.addEventListener("change", (e) => {
-      const file = e.target?.files?.[0];
-      handleFile(file);
+      handleFiles(e.target?.files || []);
+      // belangrijk: laat opnieuw selecteren van dezelfde files toe
+      // (change event vuurt soms niet als je exact dezelfde selectie herhaalt)
+      e.target.value = "";
     });
   }
 
@@ -631,23 +682,20 @@ Wat we hebben herkend in je document:
 
   // ==================== INIT ====================
   async function init() {
-    // init UI state
     safeDisable(extractBtn, true);
     safeDisable(generatePlanBtn, true);
     if (downloadBtn) downloadBtn.disabled = true;
     if (printBtn) printBtn.disabled = true;
 
-    // bind listeners
     bindUploadZone();
     bindFileInput();
     bindButtons();
 
-    // load zorgbundels
     await loadZorgbundelsData();
 
-    // initial messages
     resetWorkflow();
     resetPreview();
+    renderUploadedList();
   }
 
   // Zorg dat dit pas start als DOM klaar is
