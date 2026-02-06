@@ -848,6 +848,14 @@ document.addEventListener('DOMContentLoaded', function() {
       e.preventDefault();
       uploadZone.classList.add('dragover');
     });
+
+      // Document remove button handler (event delegation)
+      document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('doc-remove-btn')) {
+                    const index = parseInt(e.target.dataset.index);
+                    removeDocument(index);
+                  }
+          });
     uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
     uploadZone.addEventListener('drop', (e) => {
       e.preventDefault();
