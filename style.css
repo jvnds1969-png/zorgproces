@@ -845,3 +845,60 @@ footer {
 .uploaded-docs-title::before {
     content: '📄';
 }
+
+
+/* Uploaded Documents List */
+.uploaded-documents-list {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0;
+}
+
+.uploaded-document-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
+  transition: all 0.2s;
+}
+
+.uploaded-document-item:hover {
+  background: #f8fafc;
+  border-color: #005b96;
+  transform: translateX(4px);
+}
+
+.uploaded-document-item .doc-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.uploaded-document-item .doc-name {
+  flex: 1;
+  font-weight: 500;
+  color: #1e40af;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.uploaded-document-item .doc-remove-btn {
+  background: transparent;
+  border: none;
+  color: #dc2626;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.uploaded-document-item .doc-remove-btn:hover {
+  background: #fee2e2;
+  transform: scale(1.1);
+}
