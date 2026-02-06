@@ -436,7 +436,6 @@ function updateDocumentList() {
       li.innerHTML = `      <span class="doc-icon">📄</span>
         <span class="doc-name">${doc.name}</span>
         <button type="button" class="doc-remove-btn" data-index="${index}">✕</button>`;
-    `;
     documentList.appendChild(li);
   });
   if (extractTermsBtn) {
