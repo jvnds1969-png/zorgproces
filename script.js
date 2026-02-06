@@ -6,7 +6,18 @@
 (() => {
   // ---- Elements
   const uploadZone = document.getElementById("uploadZone");
-  const fileInput = document.getElementById("fileInput");
+  let fileInput = document.getElementById("fileInput");
+     
+  // Create fileInput if it doesn't exist (was commented out in HTML)
+  if (!fileInput) {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.id = 'fileInput';
+    input.accept = '.pdf,.docx,.txt';
+    input.style.display = 'none';
+    document.body.appendChild(input);
+    fileInput = input; // Update the const reference
+  }
   const documentList = document.getElementById("documentList");
   const uploadedDocsTitle = document.getElementById("uploadedDocsTitle");
 
