@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Zorgplanproces - Van Document naar Zorgplan</title>
+  <title>Zorgstart — Van Document naar Zorgplan</title>
 
   <link rel="stylesheet" href="style.css?v=3">
 
@@ -24,7 +24,7 @@
       <a href="https://jvnds1969-png.github.io/Zorgbundels-en-probleemgebieden/" target="_blank" rel="noopener">Zorgbundels</a>
       <a href="https://jvnds1969-png.github.io/Zorgverleners/" target="_blank" rel="noopener">Zorgverleners</a>
       <a href="https://test.onepatient.bingli.be/dashboard" target="_blank" rel="noopener">OnePatient</a>
-      <a href="https://www.bcfi.be/nl/chapters" target="_blank" rel="noopener">BCFI Repertorium</a>
+      <a href="https://www.bcfi.be/nl/chapters" target="_blank" rel="noopener">BCFI</a>
     </nav>
   </header>
 
@@ -33,27 +33,30 @@
     <section class="workflow-step active" id="stap1">
       <div class="step-header">
         <span class="step-number">1</span>
-        <h2>Document Uploaden &amp; Patientgegevens</h2>
+        <h2>Documenten uploaden & patiëntgegevens</h2>
       </div>
 
       <div class="step-content">
         <div class="patient-form">
           <div class="form-group">
-            <label for="patientNaam">Naam patiënt:</label>
-            <input type="text" id="patientNaam" placeholder="Voornaam Achternaam">
+            <label for="patientNaam">Naam patiënt</label>
+            <input type="text" id="patientNaam" placeholder="Voornaam Achternaam" autocomplete="off">
           </div>
           <div class="form-group">
-            <label for="patientGeboortedatum">Geboortedatum:</label>
+            <label for="patientGeboortedatum">Geboortedatum</label>
             <input type="date" id="patientGeboortedatum">
+          </div>
+          <div class="form-group">
+            <label>Leeftijd</label>
+            <div id="patientLeeftijd" class="readonly-field">-</div>
           </div>
         </div>
 
         <div class="upload-zone" id="uploadZone" role="button" tabindex="0" aria-label="Upload document">
           <div class="upload-icon">+</div>
-          <p><strong>Sleep PDF/DOCX hierheen</strong> of klik om te uploaden</p>
-          <p class="upload-hint">Ontslagbrief, medicatieschema, rapport… (.pdf, .docx, .txt)</p>
+          <p><strong>Sleep PDF/DOCX/TXT hierheen</strong> of klik om te uploaden</p>
+          <p class="upload-hint">Ontslagbrief, medicatieschema, verpleegkundig rapport…</p>
 
-          <!-- mag blijven staan; JS forceert multiple=true -->
           <input
             type="file"
             id="fileInput"
@@ -62,17 +65,17 @@
           />
         </div>
 
-        <!-- OPGELADEN DOCUMENTEN LIJST -->
         <div class="uploaded-documents-section">
-          <h4 class="uploaded-docs-title" id="uploadedDocsTitle" style="display:none;">Opgeladen documenten:</h4>
+          <h4 class="uploaded-docs-title" id="uploadedDocsTitle" style="display:none;">Opgeladen documenten</h4>
           <ul id="documentList" class="uploaded-documents-list"></ul>
         </div>
 
-        <!-- DOCUMENT PREVIEW SECTIE -->
         <div id="documentPreviewSection" class="document-preview-section" style="display:none;">
-          <h4 class="preview-title">Document preview:</h4>
+          <h4 class="preview-title">Preview</h4>
           <div id="documentPreviewContainer" class="document-preview-container"></div>
         </div>
+
+        <div id="analysisStatus" class="status-box" style="display:none;"></div>
 
         <button id="extractTerms" class="btn-primary" disabled>Analyseer Document</button>
       </div>
@@ -82,20 +85,18 @@
     <section class="workflow-step" id="stap2">
       <div class="step-header">
         <span class="step-number">2</span>
-        <h2>Gevonden Termen &amp; Zorgbundels</h2>
+        <h2>Probleemgebieden & bundels</h2>
       </div>
+
       <div class="step-content">
         <h3>Gevonden termen</h3>
-        <!-- IDs zoals JS verwacht -->
-        <div id="foundTerms"></div>
+        <div id="foundTerms" class="panel"></div>
 
-        <h3>Voorgestelde Zorgbundels</h3>
-        <!-- ID zoals JS verwacht -->
-        <div id="suggestedBundles"></div>
+        <h3>Voorgestelde zorgbundels</h3>
+        <div id="suggestedBundles" class="panel"></div>
 
-        <h3>Medicatie-informatie</h3>
-        <!-- ID zoals JS verwacht -->
-        <div id="medicatieInfo"><p>Geen medicatie-informatie beschikbaar</p></div>
+        <h3>Medicatie (centraal)</h3>
+        <div id="medicatieInfo" class="panel"></div>
 
         <button id="generatePlan" class="btn-primary" disabled>Genereer Zorgplan</button>
       </div>
@@ -105,19 +106,18 @@
     <section class="workflow-step" id="stap3">
       <div class="step-header">
         <span class="step-number">3</span>
-        <h2>Kies Weergave</h2>
+        <h2>Kies weergave</h2>
       </div>
+
       <div class="step-content">
-        <!-- Radios zoals JS verwacht -->
         <div class="mode-toggle">
           <label class="toggle-btn">
             <input type="radio" id="viewProf" name="viewMode" value="prof" checked>
             Professioneel
           </label>
-
           <label class="toggle-btn">
             <input type="radio" id="viewPatient" name="viewMode" value="patient">
-            Voor Patiënt (eenvoudig)
+            Voor patiënt (B1)
           </label>
         </div>
       </div>
@@ -129,13 +129,12 @@
         <span class="step-number">4</span>
         <h2>Zorgplan</h2>
       </div>
+
       <div class="step-content">
-        <!-- ID zoals JS verwacht -->
-        <div id="zorgplanOutput"></div>
+        <div id="zorgplanOutput" class="panel"></div>
 
         <div class="plan-actions">
-          <!-- IDs zoals JS verwacht (geen inline onclick) -->
-          <button id="downloadPlan" class="btn-secondary" disabled>Download (TXT)</button>
+          <button id="downloadPlan" class="btn-secondary" disabled>Download als HTML</button>
           <button id="printPlan" class="btn-secondary" disabled>Afdrukken</button>
         </div>
       </div>
@@ -143,9 +142,9 @@
   </main>
 
   <footer>
-    <p>Zorgstart - Zorgplanproces v2.2 | Medicatie-info: <a href="https://www.bcfi.be/nl/chapters" target="_blank" rel="noopener">BCFI Repertorium</a></p>
+    <p>Zorgstart | Medicatie-info: <a href="https://www.bcfi.be/nl/chapters" target="_blank" rel="noopener">BCFI Repertorium</a></p>
   </footer>
 
-  <script src="script.js?v=20260208-01"></script>
+  <script src="script.js?v=20260208-02"></script>
 </body>
 </html>
