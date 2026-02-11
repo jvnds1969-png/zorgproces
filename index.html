@@ -53,15 +53,16 @@
           </div>
         </div>
 
-        <div class="upload-zone" id="uploadZone" role="button" tabindex="0" aria-label="Upload document">
+        <div class="upload-zone" id="uploadZone" role="button" tabindex="0" aria-label="Upload documenten">
           <div class="upload-icon">+</div>
           <p><strong>Sleep PDF/DOCX/TXT hierheen</strong> of klik om te uploaden</p>
-          <p class="upload-hint">Ontslagbrief, medicatieschema, verpleegkundig rapport…</p>
+          <p class="upload-hint">Je kan meerdere documenten tegelijk toevoegen</p>
 
           <input
             type="file"
             id="fileInput"
             accept=".pdf,.docx,.txt"
+            multiple
             style="display:none"
           />
         </div>
@@ -78,7 +79,11 @@
 
         <div id="analysisStatus" class="status-box" style="display:none;"></div>
 
-        <button id="extractTerms" class="btn-primary" disabled>Analyseer Document</button>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button id="extractTerms" class="btn-primary" disabled>Analyseer Documenten</button>
+          <button id="openBingliLogin" class="btn-secondary" disabled>Login OnePatient (Bingli)</button>
+          <button id="uploadToOnePatientBtn" class="btn-secondary" disabled>Upload naar OnePatient</button>
+        </div>
       </div>
     </section>
 
@@ -90,13 +95,13 @@
       </div>
 
       <div class="step-content">
-        <h3>Gevonden termen</h3>
+        <h3>Gevonden lexicon-termen</h3>
         <div id="foundTerms" class="panel"></div>
 
-        <h3>Voorgestelde zorgbundels</h3>
+        <h3>Voorgestelde probleemgebieden</h3>
         <div id="suggestedBundles" class="panel"></div>
 
-        <h3>Medicatie (centraal)</h3>
+        <h3>Extract (ruwe tekst)</h3>
         <div id="medicatieInfo" class="panel"></div>
 
         <button id="generatePlan" class="btn-primary" disabled>Genereer Zorgplan</button>
@@ -146,6 +151,6 @@
     <p>Zorgstart | Medicatie-info: <a href="https://www.bcfi.be/nl/chapters" target="_blank" rel="noopener">BCFI Repertorium</a></p>
   </footer>
 
-  <script src="script.js?v=20260208-02"></script>
+  <script src="script.js?v=20260211-01"></script>
 </body>
 </html>
